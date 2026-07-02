@@ -1,0 +1,67 @@
+baseURL = "https://scrutineer.sh/"
+languageCode = "en-us"
+title = "Scrutineer"
+theme = "PaperMod"
+enableRobotsTXT = true
+timeZone = "America/Los_Angeles"
+
+[pagination]
+pagerSize = 10
+
+[minify]
+disableXML = true
+
+[params]
+description = "Kubernetes-native governance for autonomous AI agents — policy, approvals, and an audit trail the agent can't forge."
+keywords = ["AI agents", "Kubernetes", "security", "governance", "audit", "egress control"]
+defaultTheme = "auto"
+mainSections = ["blog"]
+ShowReadingTime = true
+ShowShareButtons = false
+ShowCodeCopyButtons = true
+ShowRssButtonInSectionTermList = true
+ShowFullTextinRSS = true
+ShowBreadCrumbs = true
+hideFooter = false
+
+  [params.homeInfoParams]
+  Title = "An agent shouldn't be able to forge its own audit trail."
+  Content = """
+Scrutineer is an open-source, Kubernetes-native governance control plane for autonomous AI agents:
+per-session policy, scoped human approvals, and runtime evidence produced **outside the agent's trust domain** —
+so a prompt-injected or compromised agent can't bypass enforcement or falsify the record of what it did.
+
+Not an agent framework. Not a workflow engine. The governance layer that wraps whatever you already run.
+"""
+
+  [[params.socialIcons]]
+  name = "github"
+  url = "https://github.com/grantbarry29/scrutineer"
+
+  [[params.socialIcons]]
+  name = "rss"
+  url = "/index.xml"
+
+[menu]
+
+  [[menu.main]]
+  identifier = "blog"
+  name = "Blog"
+  url = "/blog/"
+  weight = 10
+
+  [[menu.main]]
+  identifier = "github"
+  name = "GitHub"
+  url = "https://github.com/grantbarry29/scrutineer"
+  weight = 20
+
+[markup]
+
+  [markup.goldmark.renderer]
+  unsafe = false
+
+  [markup.highlight]
+  noClasses = false
+  codeFences = true
+  guessSyntax = false
