@@ -1,0 +1,39 @@
+{{- /* https://llmstxt.org/ — a machine-readable map of the site.
+     Generated from the content tree at build time; every entry links
+     the page's raw-Markdown edition (see page.markdown.md). */ -}}
+{{- define "_partials/llms-entry.txt" -}}
+- [{{ .Title }}]({{ with .OutputFormats.Get "markdown" }}{{ .Permalink }}{{ end }}): {{ .Summary | plainify | htmlUnescape | chomp }}
+{{- end -}}
+# {{ site.Title }}
+
+> {{ site.Params.description }}
+
+Every documentation page is also published as raw Markdown: drop the
+URL's trailing slash and append `.md` (for example
+{{ with site.GetPage "/docs/getting-started/quickstart" }}{{ with .OutputFormats.Get "markdown" }}{{ .Permalink }}{{ end }}{{ end }}).
+Source, issues, and design docs: https://github.com/grantbarry29/scrutineer
+
+## Docs
+{{ $docs := site.GetPage "/docs" }}
+{{- range $docs.Sections.ByWeight }}
+
+### {{ .LinkTitle }}
+{{ range .RegularPages.ByWeight }}
+{{- partial "llms-entry.txt" . }}
+{{ end }}
+{{- end }}
+
+### Reference
+{{ range $docs.RegularPages.ByWeight }}
+{{- partial "llms-entry.txt" . }}
+{{ end }}
+{{- with (site.GetPage "/blog").RegularPages.ByDate.Reverse }}
+## Blog
+{{ range . }}
+{{- partial "llms-entry.txt" . }}
+{{ end }}
+{{- end }}
+## Agent resources
+
+- [Sitemap]({{ "sitemap.xml" | absURL }})
+- [RSS (full text)]({{ "index.xml" | absURL }})

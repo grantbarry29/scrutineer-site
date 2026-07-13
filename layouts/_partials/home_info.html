@@ -1,0 +1,45 @@
+{{- /* Project override of PaperMod's home_info.html: adds a badge,
+     CTA buttons, and a copyable quick-start box under the hero. */ -}}
+{{- with site.Params.homeInfoParams }}
+<article class="first-entry home-info">
+    <header class="entry-header">
+        <p class="home-badge">Open source · Apache-2.0 · Runs in your cluster</p>
+        <h1>{{ .Title | markdownify }}</h1>
+    </header>
+    <div class="entry-content md-content">
+        {{ $opts := dict "display" "block" }}
+        {{ .Content | $.Page.RenderString $opts }}
+    </div>
+    <div class="home-ctas">
+        <a class="home-cta home-cta-primary" href="/docs/getting-started/quickstart/">Get started</a>
+        <a class="home-cta" href="/docs/">Read the docs</a>
+    </div>
+    <div class="home-quickstart">
+        {{ highlight "git clone https://github.com/grantbarry29/scrutineer.git\ncd scrutineer\nmake quickstart" "sh" "" }}
+        <p class="home-quickstart-note">
+            Five minutes to a lock-<em>verified</em> install on a local
+            <a href="https://kind.sigs.k8s.io/">kind</a> cluster — or
+            <a href="/docs/getting-started/install/">install on your existing cluster&nbsp;→</a>
+        </p>
+    </div>
+    <footer class="entry-footer">
+        {{ partial "social_icons.html" (dict "align" site.Params.homeInfoParams.AlignSocialIconsTo) }}
+    </footer>
+</article>
+<script>
+    // PaperMod only wires copy buttons on kind "page"; give the
+    // homepage quick-start box the same button.
+    document.querySelectorAll('.home-quickstart .highlight > pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+        copybutton.addEventListener('click', () => {
+            navigator.clipboard && navigator.clipboard.writeText(codeblock.textContent);
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => { copybutton.innerHTML = 'copy'; }, 2000);
+        });
+        container.appendChild(copybutton);
+    });
+</script>
+{{- end -}}

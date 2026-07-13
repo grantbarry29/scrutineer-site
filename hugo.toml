@@ -11,6 +11,28 @@ pagerSize = 10
 [minify]
 disableXML = true
 
+# Agent-readable docs: every regular page is also published as raw
+# Markdown at its pretty URL + ".md" (ugly), and the home page
+# publishes /llms.txt as a map of them.
+[mediaTypes."text/markdown"]
+suffixes = ["md"]
+
+[outputFormats.markdown]
+mediaType = "text/markdown"
+isPlainText = true
+notAlternative = true
+ugly = true
+
+[outputFormats.llms]
+mediaType = "text/plain"
+baseName = "llms"
+isPlainText = true
+notAlternative = true
+
+[outputs]
+home = ["html", "rss", "llms"]
+page = ["html", "markdown"]
+
 [params]
 description = "Kubernetes-native governance for autonomous AI agents — policy, approvals, and an audit trail the agent can't forge."
 keywords = ["AI agents", "Kubernetes", "security", "governance", "audit", "egress control"]
@@ -49,6 +71,18 @@ Not an agent framework. Not a workflow engine. The governance layer that wraps w
   name = "Blog"
   url = "/blog/"
   weight = 10
+
+  [[menu.main]]
+  identifier = "docs"
+  name = "Docs"
+  url = "/docs/"
+  weight = 15
+
+  [[menu.main]]
+  identifier = "discussions"
+  name = "Discussions"
+  url = "https://github.com/grantbarry29/scrutineer/discussions"
+  weight = 18
 
   [[menu.main]]
   identifier = "github"
