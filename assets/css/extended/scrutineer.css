@@ -125,7 +125,7 @@
    !important }`, which strips even chroma's own background. */
 .post-content .highlight pre,
 .post-content pre.chroma,
-.post-content > pre,
+.post-content > pre:not(.mermaid),
 .home-quickstart .highlight pre {
   background: rgb(36, 39, 58) !important;
   /* long lines scroll inside the block — never clipped, never
@@ -323,3 +323,16 @@
 }
 .site-footer-meta a { color: var(--secondary); }
 .site-footer-meta a:hover { color: var(--accent); }
+
+/* ---- Mermaid diagrams ----------------------------------------
+   Rendered client-side from ```mermaid fences (render hook +
+   extend_footer). Plain, centered canvas — the mermaid theme
+   (dark/neutral, re-rendered on toggle) supplies the colors. */
+.post-content pre.mermaid {
+  background: transparent !important;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.post-content pre.mermaid svg { max-width: 100%; height: auto; }

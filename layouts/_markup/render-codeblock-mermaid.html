@@ -1,0 +1,4 @@
+{{- /* ```mermaid fences render as diagrams: the fence body is emitted as
+     text for mermaid.js (vendored; loaded per-page by extend_footer.html
+     only when this hook ran) to replace client-side. */ -}}
+<pre class="mermaid">{{ .Inner | htmlEscape | safeHTML }}</pre>

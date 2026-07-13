@@ -3,59 +3,62 @@ title: "Overview"
 description: "What Scrutineer is, how it works, and where to start."
 ---
 
-**Scrutineer** is an open-source, Kubernetes-native governance control plane for
-autonomous AI agents: per-session policy, scoped human approvals, and runtime evidence
-produced **outside the agent's trust domain** — so a prompt-injected or compromised
-agent can't bypass enforcement or falsify the record of what it did.
+**Scrutineer** governs autonomous AI agents on Kubernetes: per-session policy, human
+approvals, and runtime evidence produced **outside the agent's trust domain**. A
+compromised agent can't bypass the rules or edit the record.
 
-It is **not** an agent framework, workflow engine, or inference layer. You bring your
-own agent as a container image; Scrutineer wraps it in governance it cannot reach.
+Not an agent framework. You bring your own agent image; Scrutineer wraps it in
+governance it can't reach.
 
 ## How it works
 
-Each governed run is an `AgentSession`. The controller provisions the agent workload,
-a **per-session Envoy proxy in its own pod**, and a default-deny NetworkPolicy that
-makes the proxy the agent's *only* egress path — enforced by the CNI in the kernel,
-outside the agent's network namespace.
+Each run is an `AgentSession`. The controller starts the agent pod, a **per-session
+Envoy proxy**, and a default-deny NetworkPolicy that makes the proxy the agent's
+**only** way out — enforced in the kernel, outside the agent's reach.
 
-```text
-agent pod (unprivileged, credential-empty)
-   │
-   ├── governed traffic ──► per-session Envoy pod ──► allowed upstreams
-   │                        (own identity/netns)  └──► observed evidence ──► reporter
-   │
-   └── bypass attempt (raw socket, unset proxy env)
-                └──► dropped by default-deny NetworkPolicy (kernel/CNI)
+```mermaid
+flowchart LR
+  agent["agent pod<br/>unprivileged · credential-empty"]
+  proxy["per-session Envoy proxy<br/>own pod · own identity"]
+  up["allowed upstreams"]
+  rep["evidence reporter"]
+  drop["dropped in the kernel<br/>default-deny NetworkPolicy"]
+
+  agent -->|governed traffic| proxy
+  proxy --> up
+  proxy -->|observed evidence| rep
+  agent -.->|bypass attempt| drop
+
+  classDef dead stroke:#e5534b,stroke-dasharray:4 3
+  class drop dead
 ```
 
-Every runtime decision lands in the session's status with a provenance label:
-**`observed`** (reported by the out-of-pod proxy's own identity) or
-**`self-reported`** (anything from inside the agent's trust domain). Neither pretends
-to be the other.
+Every decision lands in the session's status, labeled by source: **`observed`**
+(the proxy) or **`self-reported`** (the agent). Neither pretends to be the other.
 
 ## Quick start
 
 ```sh
 git clone https://github.com/grantbarry29/scrutineer.git
 cd scrutineer
-make quickstart   # kind cluster + controller + verified-or-refused gate (~5 min)
-make demo         # enforced vs audit-only, live denial + bypass + evidence (~2 min)
+make quickstart   # kind cluster + verified enforcement (~5 min)
+make demo         # a denial, a dead bypass, the evidence (~2 min)
 ```
 
 ## Start here
 
 {{< cards >}}
 {{< card href="/docs/getting-started/quickstart/" title="Quickstart" >}}
-One command to a running, lock-verified Scrutineer on a local kind cluster.
+One command to a verified install on kind.
 {{< /card >}}
 {{< card href="/docs/getting-started/demo/" title="Demo" >}}
-Watch a denial, a dead bypass attempt, and evidence the agent couldn't forge.
+A live denial, a dead bypass, and the evidence.
 {{< /card >}}
 {{< card href="/docs/getting-started/install/" title="Install on your cluster" >}}
-The no-magic path: every command visible, on your existing cluster.
+Every command visible, on your own cluster.
 {{< /card >}}
 {{< card href="/docs/concepts/core-concepts/" title="Core concepts" >}}
-Sessions, policies, profiles, the two locks, and evidence assurance.
+Sessions, policies, the two locks, evidence.
 {{< /card >}}
 {{< /cards >}}
 
@@ -63,15 +66,15 @@ Sessions, policies, profiles, the two locks, and evidence assurance.
 
 {{< cards >}}
 {{< card href="https://github.com/grantbarry29/scrutineer" title="GitHub" >}}
-Source, issues, and the full reference documentation.
+Source, issues, and reference docs.
 {{< /card >}}
 {{< card href="https://github.com/grantbarry29/scrutineer/tree/main/docs/design" title="Design docs" >}}
-The threat model, architecture decisions, and every stated boundary.
+Threat model and every stated boundary.
 {{< /card >}}
 {{< card href="/blog/agents-forge-audit-trails/" title="Why this exists" >}}
-The essay: your AI agent can edit its own audit log.
+Your agent can edit its own audit log.
 {{< /card >}}
 {{< card href="/docs/faq/" title="FAQ" >}}
-Why not just a firewall, a service mesh, or a CNI? Honest comparisons.
+Why not just a firewall or a CNI?
 {{< /card >}}
 {{< /cards >}}

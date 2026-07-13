@@ -1,0 +1,27 @@
+{{- /* Mermaid loader: vendored v11.12.2 (static/js/mermaid.min.js — no
+     third-party script at page load), emitted only when this page's
+     source has a ```mermaid fence. Called from the docs layouts, NOT
+     extend_footer: PaperMod caches the footer per kind (partialCached),
+     so per-page conditions there leak the first page's result to every
+     other page of that kind. The fence check reads .RawContent because
+     it needs no .Content evaluation-order guarantees on cold builds.
+     Diagrams re-render when PaperMod's theme toggle flips
+     html[data-theme], so they stay legible in both themes. */ -}}
+{{- if and .RawContent (findRE "```mermaid" .RawContent 1) }}
+<script src="/js/mermaid.min.js" defer></script>
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    var graphs = Array.from(document.querySelectorAll('pre.mermaid'), function (el) {
+      return { el: el, src: el.textContent };
+    });
+    var render = function () {
+      var dark = document.documentElement.dataset.theme === 'dark';
+      graphs.forEach(function (g) { g.el.removeAttribute('data-processed'); g.el.textContent = g.src; });
+      mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'neutral' });
+      mermaid.run({ nodes: graphs.map(function (g) { return g.el; }) });
+    };
+    render();
+    new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  });
+</script>
+{{- end }}
