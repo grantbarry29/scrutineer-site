@@ -1,0 +1,8 @@
+{{- /* Collapsible section: {{< details summary="Title" >}}markdown{{< /details >}}
+     Inner markdown is rendered in page context (code highlighting included). */ -}}
+<details class="docs-details"{{ with .Get "id" }} id="{{ . }}"{{ end }}{{ if .Get "open" }} open{{ end }}>
+  <summary>{{ .Get "summary" }}</summary>
+  <div class="docs-details-body">
+    {{ .Inner | .Page.RenderString (dict "display" "block") }}
+  </div>
+</details>

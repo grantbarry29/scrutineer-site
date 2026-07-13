@@ -1,0 +1,29 @@
+{{- define "main" }}
+<div class="docs-layout">
+  <aside class="docs-sidebar">{{ partial "docs-nav.html" . }}</aside>
+  <div class="docs-main-col">
+    <details class="docs-nav-mobile">
+      <summary>Docs menu</summary>
+      {{ partial "docs-nav.html" . }}
+    </details>
+    <article class="docs-article post-single">
+      <header class="post-header">
+        <h1 class="post-title">{{ .Title }}</h1>
+      </header>
+      {{- if (.Param "ShowToc") }}{{ partial "toc.html" . }}{{ end }}
+      <div class="post-content">{{ .Content }}</div>
+    </article>
+  </div>
+</div>
+<script>
+  // Deep links into a collapsed {{ printf "{{< details >}}" }} box: open it on arrival.
+  (function () {
+    var open = function () {
+      var el = location.hash && document.getElementById(location.hash.slice(1));
+      if (el && el.tagName === 'DETAILS') { el.open = true; el.scrollIntoView(); }
+    };
+    window.addEventListener('hashchange', open);
+    open();
+  })();
+</script>
+{{- end }}

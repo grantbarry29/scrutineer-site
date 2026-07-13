@@ -1,0 +1,25 @@
+{{- define "main" }}
+{{- $isRoot := eq . (site.GetPage "/docs") }}
+<div class="docs-layout">
+  <aside class="docs-sidebar">{{ partial "docs-nav.html" . }}</aside>
+  <div class="docs-main-col">
+    <details class="docs-nav-mobile">
+      <summary>Docs menu</summary>
+      {{ partial "docs-nav.html" . }}
+    </details>
+    <article class="docs-article post-single">
+      <header class="post-header">
+        <h1 class="post-title">{{ .Title }}</h1>
+      </header>
+      <div class="post-content">{{ .Content }}</div>
+      {{- if not $isRoot }}
+      <ul class="docs-child-list">
+        {{- range .RegularPages.ByWeight }}
+        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ with .Params.summary }}<span> — {{ . }}</span>{{ end }}</li>
+        {{- end }}
+      </ul>
+      {{- end }}
+    </article>
+  </div>
+</div>
+{{- end }}

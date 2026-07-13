@@ -1,0 +1,4 @@
+<a class="docs-card" href="{{ .Get "href" }}"{{ if hasPrefix (.Get "href") "http" }} target="_blank" rel="noopener"{{ end }}>
+  <div class="docs-card-title">{{ .Get "title" }}</div>
+  <div class="docs-card-desc">{{ trim .Inner " \n" | markdownify }}</div>
+</a>

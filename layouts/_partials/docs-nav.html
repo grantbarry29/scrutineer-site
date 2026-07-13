@@ -1,0 +1,17 @@
+{{- /* Sidebar navigation for the docs section: Overview link, then each
+     subsection as an unclickable group label with its pages by weight.
+     Active page gets the accent pill (see assets/css/extended/docs.css). */ -}}
+{{- $docs := site.GetPage "/docs" -}}
+{{- $cur := . -}}
+<nav class="docs-nav">
+  <a href="{{ $docs.RelPermalink }}" class="docs-nav-link{{ if eq $cur $docs }} active{{ end }}">Overview</a>
+  {{- range $docs.Sections.ByWeight }}
+  <div class="docs-nav-group">{{ .Title }}</div>
+  {{- range .RegularPages.ByWeight }}
+  <a href="{{ .RelPermalink }}" class="docs-nav-link{{ if eq $cur . }} active{{ end }}">{{ .LinkTitle }}</a>
+  {{- end }}
+  {{- end }}
+  {{- range $docs.RegularPages.ByWeight }}
+  <a href="{{ .RelPermalink }}" class="docs-nav-link{{ if eq $cur . }} active{{ end }}">{{ .LinkTitle }}</a>
+  {{- end }}
+</nav>
