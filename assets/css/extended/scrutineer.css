@@ -1,0 +1,325 @@
+/* ============================================================
+   Scrutineer site theme — dark-blue accent + openclaw-style
+   blog list. Layered over PaperMod via assets/css/extended/*,
+   which Hugo bundles LAST, so these rules win without forking
+   the theme. Reference layout: single centred column, left
+   wordmark + right nav, posts as a flat divider list.
+   ============================================================ */
+
+/* ---- Palette -------------------------------------------------
+   PaperMod ships no accent var (links use --primary); introduce
+   one. Dark blue reads literally on light; on dark it must
+   brighten to stay legible, so the accent lightens by theme. */
+:root {
+  --accent: #1e40af;                       /* blue-800 · ~8.5:1 on white */
+  --accent-hover: #1e3a8a;
+  --accent-soft: rgba(30, 64, 175, 0.13);
+}
+
+:root[data-theme="dark"] {
+  --theme: #111319;                        /* near-black, faint cool cast */
+  --entry: #171a22;
+  --border: #262b37;
+  --accent: #7aa2ff;                       /* brightened for dark bg */
+  --accent-hover: #a7c2ff;
+  --accent-soft: rgba(122, 162, 255, 0.18);
+}
+
+::selection { background: var(--accent-soft); }
+::-moz-selection { background: var(--accent-soft); }
+
+/* ---- Header / nav -------------------------------------------- */
+.logo a { transition: color 0.2s ease; }
+.logo a:hover,
+#menu a:hover { color: var(--accent); }
+#menu .active { text-decoration-color: var(--accent); }
+
+/* ---- Blog list: flat divider rows, not cards ----------------
+   Strip PaperMod's card chrome (border box, fill, radius, lift)
+   and replace with a single bottom rule + generous vertical
+   rhythm. Applies to every list row: .post-entry, and the
+   featured .first-entry on /blog/ — but NOT the .home-info hero
+   (which also carries .first-entry). */
+.post-entry,
+.first-entry:not(.home-info) {
+  min-height: unset;
+  margin: 0;
+  padding: calc(var(--gap) * 1.25) 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  transition: none;
+  justify-content: flex-start;
+}
+.post-entry:hover,
+.post-entry:focus-within,
+.first-entry:not(.home-info):hover {
+  transform: none;
+  border-color: var(--border);
+}
+.post-entry:last-child,
+.first-entry:not(.home-info):last-child { border-bottom: 0; }
+
+/* uniform title size across featured + rest (openclaw is flat) */
+.first-entry:not(.home-info) .entry-header h1,
+.first-entry:not(.home-info) .entry-header h2,
+.post-entry .entry-header h2 {
+  font-size: 1.5rem;
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.post-entry .entry-header,
+.first-entry:not(.home-info) .entry-header { -webkit-line-clamp: 2; }
+
+.post-entry:hover .entry-header h2,
+.first-entry:not(.home-info):hover .entry-header h1,
+.first-entry:not(.home-info):hover .entry-header h2 { color: var(--accent); }
+
+/* short muted excerpt — openclaw shows none; we keep two subtle lines */
+.post-entry .entry-content,
+.first-entry:not(.home-info) .entry-content {
+  margin: 0.55rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--secondary);
+  -webkit-line-clamp: 2;
+}
+
+/* meta row: date · reading time */
+.entry-footer {
+  margin-top: 0.7rem;
+  font-size: 0.82rem;
+  color: var(--secondary);
+}
+
+/* ---- Home hero (home-info) ---------------------------------- */
+.home-info.first-entry {
+  min-height: unset;                       /* drop PaperMod's 320px centring block */
+  margin-bottom: var(--gap);
+  padding-bottom: calc(var(--gap) * 1.5);
+  border-bottom: 1px solid var(--border);
+}
+.home-info .entry-content strong { color: var(--accent); font-weight: 700; }
+.home-info .entry-header h1 {
+  font-size: 2.4rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.home-info .entry-content {
+  margin-top: 1rem;
+  color: var(--secondary);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+/* ---- Code blocks: dark canvas in both themes -----------------
+   PaperMod master ships a dark chroma palette with no light
+   variant and leaves the block background transparent — in light
+   mode that's pale text on white. Give fenced blocks their dark
+   canvas everywhere (inline `code` keeps the theme-aware
+   --code-bg). */
+/* !important: PaperMod ships `.chroma { background-color: unset
+   !important }`, which strips even chroma's own background. */
+.post-content .highlight pre,
+.post-content pre.chroma,
+.post-content > pre,
+.home-quickstart .highlight pre {
+  background: rgb(36, 39, 58) !important;
+  /* long lines scroll inside the block — never clipped, never
+     page-wide overflow (the terminal chrome's overflow:hidden
+     would otherwise silently cut long commands). */
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+/* ---- Terminal chrome for shell blocks ------------------------
+   Fenced ```sh / ```bash blocks read as a terminal window (title
+   bar + traffic-light dots); yaml/json/file blocks stay plain, so
+   commands and file contents are visually distinct. Browsers
+   without :has() just get the plain block — harmless fallback.
+   PaperMod's copy button (absolute, top-right of .highlight)
+   lands in the title bar, like a real terminal control. */
+.post-content .highlight:has(> pre.chroma > code.language-sh),
+.post-content .highlight:has(> pre.chroma > code.language-bash),
+.post-content .highlight:has(> pre.chroma > code.language-shell),
+.home-quickstart .highlight:has(> pre.chroma > code.language-sh) {
+  margin: 14px 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.post-content .highlight:has(> pre.chroma > code.language-sh)::before,
+.post-content .highlight:has(> pre.chroma > code.language-bash)::before,
+.post-content .highlight:has(> pre.chroma > code.language-shell)::before,
+.home-quickstart .highlight:has(> pre.chroma > code.language-sh)::before {
+  content: "terminal";
+  display: block;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 14px;
+  font-family: monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+  background: rgb(30, 32, 48);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.post-content .highlight:has(> pre.chroma > code.language-sh) > pre.chroma,
+.post-content .highlight:has(> pre.chroma > code.language-bash) > pre.chroma,
+.post-content .highlight:has(> pre.chroma > code.language-shell) > pre.chroma,
+.home-quickstart .highlight:has(> pre.chroma > code.language-sh) > pre.chroma {
+  margin: 0;
+  border-radius: 0;
+}
+
+/* ---- In-content links --------------------------------------- */
+.post-content a {
+  color: var(--accent);
+  box-shadow: none;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+.post-content a:hover {
+  color: var(--accent-hover);
+  text-decoration-color: var(--accent-hover);
+}
+.post-content blockquote { border-inline-start: 3px solid var(--accent); }
+
+/* ---- Tags: flat outline, accent on hover -------------------- */
+.post-tags a {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--secondary);
+}
+.post-tags a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* ---- Home: badge, CTAs, quick-start box ---------------------- */
+.home-badge {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--secondary);
+}
+
+.home-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: calc(var(--gap) * 1.25);
+}
+.home-cta {
+  display: inline-block;
+  padding: 9px 22px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.home-cta:hover {
+  color: var(--accent-hover);
+  border-color: var(--accent-hover);
+  background: var(--accent-soft);
+}
+.home-cta-primary {
+  background: var(--accent);
+  color: var(--theme);
+}
+.home-cta-primary:hover {
+  background: var(--accent-hover);
+  color: var(--theme);
+}
+
+.home-quickstart {
+  max-width: 620px;
+  margin-top: calc(var(--gap) * 0.75);
+}
+/* PaperMod's absolute copy button needs a positioned ancestor
+   (elsewhere .post-content .highlight provides it). */
+.home-quickstart .highlight { position: relative; }
+.home-quickstart-note {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--secondary);
+}
+.home-quickstart-note a { color: var(--accent); }
+.home-quickstart-note a:hover { color: var(--accent-hover); }
+
+/* ---- Footer: link columns + meta line ------------------------ */
+/* Neutralize PaperMod's centered one-liner layout for our block. */
+.site-footer {
+  max-width: calc(var(--main-width) + var(--gap) * 2);
+  margin: calc(var(--gap) * 2) auto 0;
+  padding: calc(var(--gap) * 1.5) var(--gap) var(--gap);
+  border-top: 1px solid var(--border);
+  text-align: start;
+  line-height: 1.6;
+}
+.site-footer-cols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--gap) * 2);
+}
+.site-footer-brand { flex: 1 1 260px; max-width: 380px; }
+.site-footer-title {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+.site-footer-brand p {
+  margin-top: 6px;
+  font-size: 0.83rem;
+  color: var(--secondary);
+}
+.site-footer-col:not(.site-footer-brand) {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+}
+.site-footer-head {
+  margin-bottom: 4px;
+  font-family: monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--secondary);
+}
+/* PaperMod's .footer a carries a permanent underline (border-bottom);
+   too heavy for a link-dense footer. */
+.site-footer a { border-bottom: 0; }
+.site-footer a:hover { border-bottom: 0; }
+.site-footer-col a {
+  font-size: 0.87rem;
+  color: var(--primary);
+}
+.site-footer-col a:hover { color: var(--accent); }
+.site-footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: calc(var(--gap) * 1.25);
+  padding-top: calc(var(--gap) * 0.75);
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--secondary);
+}
+.site-footer-meta a { color: var(--secondary); }
+.site-footer-meta a:hover { color: var(--accent); }
