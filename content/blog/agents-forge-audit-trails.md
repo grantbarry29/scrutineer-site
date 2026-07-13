@@ -14,13 +14,15 @@ That's not an audit trail. It's an honor system with extra YAML.
 
 ## The cooperative-security trap
 
-Almost every agent guardrail I've seen falls into one of three patterns:
+Almost every agent guardrail I've seen falls into one of three patterns. Each has real, widely used implementations; each is bypassable by the thing it's meant to govern.
 
-1. **In-process controls.** Framework callbacks, permission wrappers, "safety" middleware inside the agent runtime. The agent's code enforces limits on the agent's code. A compromised agent *is* the enforcement point.
-2. **In-pod controls.** A proxy or policy sidecar in the same pod. Better — it's a separate process — but it shares the agent's network namespace and often its ServiceAccount. `HTTP_PROXY` is a *suggestion*; a raw socket ignores it. An adjacent process can be bypassed, tampered with, or starved.
+1. **In-process controls.** Framework callbacks, permission wrappers, "safety" middleware inside the agent runtime — Guardrails AI, NeMo Guardrails, LlamaFirewall, the guardrails in the OpenAI Agents SDK. The agent's code enforces limits on the agent's code. If the agent can run code in the same interpreter — and the interesting ones can — the check is one monkeypatch away from always returning `PASS`. A compromised agent *is* the enforcement point.
+2. **In-pod or config-routed controls.** A proxy or policy sidecar in the agent's pod, or a gateway you send traffic to by setting a `base_url` (LiteLLM, Portkey, Cloudflare AI Gateway). Better — it's a separate process — but the routing is advisory: `HTTP_PROXY` is a suggestion a raw socket ignores, and a `base_url` the agent's environment sets is one the agent can unset. Governance only covers the traffic that agreed to show up.
 3. **Provider-side controls.** The model API applies filters. Useful, but blind to everything that matters at runtime: which host actually received the connection, which file was written, which tool was invoked with which arguments.
 
-All three share a fatal property: **the evidence and the enforcement live somewhere the agent can reach.** For a demo, fine. For the thing your security team signs off on, not fine.
+To be fair to all three: mostly they aren't broken, they're solving a *different* problem — output quality, cost control, prompt-injection *detection* — under a threat model where the agent is buggy, not hostile. The trap is carrying that guarantee across the line into "assume the agent is adversarial" and expecting it to survive. It doesn't, because all three share one property: **the evidence and the enforcement live somewhere the agent can reach.** For a demo, fine. For the thing your security team signs off on, not fine.
+
+I know the in-pod version intimately, because I shipped it. Scrutineer's first enforcement tier was cooperative sidecars in the agent pod — a DNS proxy, a tool gateway. They passed every demo. Then I wrote the attacks against my own design: the agent shares that pod's network namespace, so a raw socket skips the DNS proxy entirely, and a tight loop can starve the reporter until the record is whatever happened to survive. I deleted the tier. If a control can't survive a hostile occupant of its own pod, calling it "governance" just moves the honor system one process over.
 
 I've spent my career in network dataplanes, where we internalized this a long time ago: you don't ask the workload to firewall itself.
 
@@ -70,6 +72,8 @@ Enforcement is half the story. The other half: when the proxy reports what happe
 The proxy authenticates to the evidence endpoint with its own projected ServiceAccount token. The receiving side verifies, via TokenReview, that the caller is exactly the session's proxy — the right pod name, controller-owned by the right `AgentSession`, running as the dedicated per-session ServiceAccount. All three must hold; a lookalike pod missing any one is rejected, and an agent-adjacent process can't impersonate the proxy's identity.
 
 Evidence that passes that check is stamped **`observed`**. Evidence from anything inside the agent's trust domain — cooperative sidecars, the agent itself — is stamped **`self-reported`**. Both are recorded; neither pretends to be the other.
+
+And yes — the agent can call that endpoint too; nothing stops it, and it doesn't need to. Its reports are accepted and stamped `self-reported`, exactly like a cooperative sidecar's. Assurance isn't a field the caller fills in: a payload can *claim* `observed`, and the server overwrites that claim with whatever the caller's authenticated identity actually proves. An agent's token proves "a pod owned by the session's Job" — self-reported by definition. So forging `observed` isn't a matter of setting the right field; it means *being* the proxy pod — a separate network namespace, a dedicated ServiceAccount, a token the agent has no way to mint. That reduces to compromising something outside the agent's trust domain, which is the node-tier threat this explicitly doesn't claim to stop.
 
 This distinction sounds small. It's the whole product. When a security review asks "what did this agent do," every line in the answer carries its assurance level. You know which parts of the record could survive a hostile agent and which parts assume a cooperative one.
 
