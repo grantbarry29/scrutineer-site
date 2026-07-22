@@ -50,8 +50,8 @@ hideFooter = false
   Title = "An agent shouldn't be able to forge its own audit trail."
   Content = """
 Scrutineer is an open-source, Kubernetes-native governance control plane for autonomous AI agents:
-per-session policy, scoped human approvals, and runtime evidence produced **outside the agent's trust domain** --
-so a prompt-injected or compromised agent can't bypass enforcement or falsify the record of what it did.
+per-session policy, scoped human approvals, and runtime evidence produced **outside the agent's trust domain**.
+A prompt-injected or compromised agent can't bypass enforcement or falsify the record of what it did.
 
 The governance layer that wraps whatever you already run.
 """
