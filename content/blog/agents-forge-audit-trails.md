@@ -1,7 +1,7 @@
 ---
 title: "Your AI agent can edit its own audit log"
-date: 2026-07-02
-draft: true
+date: 2026-07-21
+draft: false
 tags: ["ai-agents", "kubernetes", "security", "audit"]
 summary: "Most agent guardrails are an honor system: enforcement and evidence live inside the agent's own trust domain. Here's what it takes to produce an audit trail the agent can't bypass, tamper with, or forge -- and what I am building to get there."
 ---
