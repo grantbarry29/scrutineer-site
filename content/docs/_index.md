@@ -7,14 +7,14 @@ description: "What Scrutineer is, how it works, and where to start."
 approvals, and runtime evidence produced **outside the agent's trust domain**. A
 compromised agent can't bypass the rules or edit the record.
 
-Not an agent framework. You bring your own agent image; Scrutineer wraps it in
+Not an agent framework. You bring your own agent image. Scrutineer wraps it in
 governance it can't reach.
 
 ## How it works
 
 Each run is an `AgentSession`. The controller starts the agent pod, a **per-session
 Envoy proxy**, and a default-deny NetworkPolicy that makes the proxy the agent's
-**only** way out — enforced in the kernel, outside the agent's reach.
+**only** way out is enforced in the kernel, outside the agent's reach.
 
 ```mermaid
 flowchart LR

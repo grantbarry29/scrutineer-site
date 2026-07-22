@@ -8,17 +8,17 @@ ShowReadingTime: false
 hidemeta: true
 ---
 
-One command, a local [kind](https://kind.sigs.k8s.io/) cluster, about five minutes —
+One command, a local [kind](https://kind.sigs.k8s.io/) cluster, about five minutes,
 and the enforcement guarantee is *proved*, not assumed, before it reports success.
 (Prefer to see every step on your own cluster?
 [Install on your cluster](/docs/getting-started/install/).)
 
 {{< details summary="0 · Prerequisites" >}}
 - **Docker**, **kind**, **kubectl**, and **Go ≥ 1.21** on your PATH (kind v0.31–v0.32
-  tested). Any modern Go works — the build pins its own exact toolchain.
+  tested). Any modern Go works. The build pins its own exact toolchain.
   Missing something? `make quickstart` names it and shows the install command.
 - Internet egress from the cluster — the sample agents fetch `example.com`.
-- ~5 minutes on a first run — the images are always built from your checkout, never
+- ~5 minutes on a first run -- the images are always built from your checkout, never
   pulled, so what runs is exactly what you cloned. Repeats are faster.
 {{< /details >}}
 
