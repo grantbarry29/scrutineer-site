@@ -16,12 +16,12 @@ domain, run an agent that tries it, and read proof of the block.
 {{< details summary="0 · Prerequisites" >}}
 - A cluster and `kubectl`.
 - A CNI that enforces egress NetworkPolicy (Calico, Cilium, and kind's default all
-  do). Unsure? Scrutineer checks for you — step 2.
+  do). Unsure? Scrutineer checks for you in step 2.
 - Nodes that can pull from `ghcr.io` and Docker Hub.
-- Internet egress from pods — the audit-mode run in step 7 really fetches
+- Internet egress from pods -- the audit-mode run in step 7 really fetches
   `example.com`.
 
-No cert-manager, no webhooks — the install is just CRDs, RBAC, and one controller.
+The install is just CRDs, RBAC, and one controller. No cert-manager or webhooks.
 {{< /details >}}
 
 {{< details summary="1 · Install the CRDs and controller" >}}
@@ -44,7 +44,7 @@ kubectl -n scrutineer-system logs deployment/scrutineer-controller-manager \
   | grep 'lock probe verdict' | tail -1
 ```
 
-`Verified` — enforcement is real. `Refused` — your CNI ignores NetworkPolicy, so
+`Verified` -- enforcement is real. `Refused` -- your CNI ignores NetworkPolicy, so
 Scrutineer will only run `audit-only` sessions rather than fake enforcement.
 {{< /details >}}
 
@@ -104,7 +104,7 @@ kubectl apply -f policy.yaml
 {{< /details >}}
 
 {{< details summary="5 · Run a governed session" >}}
-The agent is plain busybox — it doesn't know Scrutineer exists. It tries the denied
+The agent is plain busybox. It doesn't know Scrutineer exists. It tries the denied
 domain:
 
 ```yaml
@@ -166,8 +166,8 @@ kubectl get agentsession first-session -o jsonpath='{.status.policyDecisions}' \
 ```
 
 (The reporter batches; if the output is empty, wait a moment and re-run. The `select`
-skips `merge`-phase entries — control-plane records of how your policies were
-resolved — and keeps what the proxy *observed*.)
+skips `merge`-phase entries -- control-plane records of how your policies were
+resolved -- and keeps what the proxy *observed*.)
 
 `observed` = reported by the proxy under its own identity. The agent can't forge or
 suppress it; anything the agent submits is stamped `self-reported` instead.
@@ -181,7 +181,7 @@ kubectl logs first-session-egress -c envoy | grep example.com   # → 403
 {{< /details >}}
 
 {{< details summary="7 · Flip the rule to audit-only" >}}
-One field turns enforcement into rehearsal — traffic flows, the denial is recorded as
+One field turns enforcement into rehearsal -- traffic flows, the denial is recorded as
 `dry-run`. Flip the policy, then run a **second** session under it:
 
 ```sh
@@ -198,11 +198,11 @@ kubectl get agentsession first-session-audit -o jsonpath='{.status.policyDecisio
   | jq '.[] | select(.phase=="runtime")'
 ```
 
-`"action": "dry-run"` — still `observed`. And `first-session` still holds its `deny`:
+`"action": "dry-run"` -- still `observed`. And `first-session` still holds its `deny`:
 re-run step 6 and compare them side by side. Mode changed what *happened*, never what
 was *seen*.
 
-A second session — not a delete-and-rerun — on purpose: the session object **is** the
+A second session (not a delete-and-rerun) on purpose: the session object **is** the
 audit record, and today the evidence lives only in its `status`. Delete the session
 and the record is gone. Rerun by creating a new session; keep the old one.
 {{< /details >}}
@@ -213,7 +213,7 @@ kubectl delete -f session.yaml -f session-audit.yaml -f policy.yaml -f runtimepr
 kubectl delete -k config/default
 ```
 
-(`config/default` includes the CRDs, so the second command removes everything —
+(`config/default` includes the CRDs, so the second command removes everything,
 including any sessions still on the cluster, and their evidence with them.)
 {{< /details >}}
 

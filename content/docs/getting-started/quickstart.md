@@ -2,7 +2,7 @@
 title: "Quickstart"
 date: 2026-07-07
 weight: 1
-summary: "One command to a running, lock-verified Scrutineer on a local kind cluster — about five minutes."
+summary: "One command to a running, lock-verified Scrutineer on a local kind cluster, in about five minutes."
 ShowToc: false
 ShowReadingTime: false
 hidemeta: true
@@ -14,10 +14,10 @@ and the enforcement guarantee is *proved*, not assumed, before it reports succes
 [Install on your cluster](/docs/getting-started/install/).)
 
 {{< details summary="0 · Prerequisites" >}}
-- **Docker**, **kind**, **kubectl**, and **Go ≥ 1.21** on your PATH (kind v0.31–v0.32
-  tested). Any modern Go works. The build pins its own exact toolchain.
+- **Docker**, **kind**, and **kubectl** on your PATH (kind v0.31–v0.32 tested). No Go
+  toolchain needed; the images build inside containers.
   Missing something? `make quickstart` names it and shows the install command.
-- Internet egress from the cluster — the sample agents fetch `example.com`.
+- Internet egress from the cluster -- the sample agents fetch `example.com`.
 - ~5 minutes on a first run -- the images are always built from your checkout, never
   pulled, so what runs is exactly what you cloned. Repeats are faster.
 {{< /details >}}
@@ -62,5 +62,5 @@ make quickstart-down
 ```
 {{< /details >}}
 
-Next: the [demo](/docs/getting-started/demo/) — a live denial, a dead bypass attempt,
+Next: the [demo](/docs/getting-started/demo/) -- a live denial, a dead bypass attempt,
 and evidence the agent couldn't forge, in one run.

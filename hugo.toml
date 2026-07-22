@@ -34,7 +34,7 @@ home = ["html", "rss", "llms"]
 page = ["html", "markdown"]
 
 [params]
-description = "Kubernetes-native governance for autonomous AI agents — policy, approvals, and an audit trail the agent can't forge."
+description = "Kubernetes-native governance for autonomous AI agents: policy, approvals, and an audit trail the agent can't forge."
 keywords = ["AI agents", "Kubernetes", "security", "governance", "audit", "egress control"]
 defaultTheme = "auto"
 mainSections = ["blog"]

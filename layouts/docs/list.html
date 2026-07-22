@@ -15,7 +15,7 @@
       {{- if not $isRoot }}
       <ul class="docs-child-list">
         {{- range .RegularPages.ByWeight }}
-        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ with .Params.summary }}<span> — {{ . }}</span>{{ end }}</li>
+        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ with .Params.summary }}<span> – {{ . }}</span>{{ end }}</li>
         {{- end }}
       </ul>
       {{- end }}
